@@ -4,7 +4,7 @@
 #include <iostream>
 #include "Data.hpp"
 
-typedef unsigned int* uintptr_t;
+#include <stdint.h> // uintptr_t
 
 uintptr_t serialize(Data* ptr) {
     return (reinterpret_cast<uintptr_t>(ptr));
@@ -27,6 +27,5 @@ int main(void) {
     } else {
         std::cout << "Yeah... You will listen to me, you're listen to me good... I will gonna teach you how to use casting in C++ in the correct way." << std::endl;
     }
-
     return (0);
 }
