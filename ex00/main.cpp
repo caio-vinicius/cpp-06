@@ -142,6 +142,8 @@ void outputValues(char const &type, char const &c, int const &i, float const &f,
             ss << c << std::endl;
         else if (type == FLOAT)
             ss << "'*'" << std::endl;
+        else if (type == INT)
+            ss << "Non displayable" << std::endl;
         else
             ss << "impossible" << std::endl;
     }
