@@ -16,6 +16,7 @@
 #define FLOAT_NEGATIVE_INFINITY 'X'
 #define DOUBLE_POSITIVE_INFINITY 'z'
 #define DOUBLE_NEGATIVE_INFINITY 'Z'
+#define FLOAT_NAN 'y'
 #define DOUBLE_NAN 'Y'
 
 #define IMPOSSIBLE 'I'
@@ -54,13 +55,15 @@ char getScalarType(std::string const &scalar) {
                     return (CHAR);
         } else {
             if (scalar == "-inff")
-                return (FLOAT_POSITIVE_INFINITY);
-            else if (scalar == "+inff")
                 return (FLOAT_NEGATIVE_INFINITY);
+            else if (scalar == "+inff")
+                return (FLOAT_POSITIVE_INFINITY);
+            else if (scalar == "nanf")
+                return (FLOAT_NAN);
             else if (scalar == "-inf")
-                return (DOUBLE_POSITIVE_INFINITY);
-            else if (scalar == "+inf")
                 return (DOUBLE_NEGATIVE_INFINITY);
+            else if (scalar == "+inf")
+                return (DOUBLE_POSITIVE_INFINITY);
             else if (scalar == "nan")
                 return (DOUBLE_NAN);
         }
@@ -83,16 +86,23 @@ bool stringToNumber(T &i, char const *s)
 void typeCasting(char const type, char &c, int &i, float &f, double &d)
 {
     switch (type) {
+        case (CHAR):
+            i = static_cast< int >(c);
+            f = static_cast< float >(c);
+            d = static_cast< double >(c);
+            break;
         case (INT):
             c = static_cast< char >(i);
             f = static_cast< float >(i);
             d = static_cast< double >(i);
             break;
         case (FLOAT):
+            c = static_cast< char >(f);
             i = static_cast< int >(f);
             d = static_cast< double >(f);
             break;
         case (DOUBLE):
+            c = static_cast< char >(d);
             i = static_cast< int >(d);
             f = static_cast< float >(d);
             break;
@@ -123,6 +133,8 @@ bool isPseudo(char const &type) {
         return (true);
     else if (type == FLOAT_NEGATIVE_INFINITY)
         return (true);
+    else if (type == FLOAT_NAN)
+        return (true);
     else if (type == DOUBLE_POSITIVE_INFINITY)
         return (true);
     else if (type == DOUBLE_NEGATIVE_INFINITY)
@@ -139,17 +151,17 @@ void outputValues(char const &type, char const &c, int const &i, float const &f,
     {
         ss << "char: ";
         if (c >= 32 && c <= 126)
-            ss << c << std::endl;
-        else if (type == FLOAT)
-            ss << "'*'" << std::endl;
-        else if (type == INT)
-            ss << "Non displayable" << std::endl;
-        else
+            ss << "'" << c << "'" << std::endl;
+        else if (isPseudo(type)) {
             ss << "impossible" << std::endl;
+        }
+        else {
+            ss << "Non displayable" << std::endl;
+        }
     }
     {
         if (isPseudo(type))
-            ss << "int: " << "0" << std::endl;
+            ss << "int: " << "impossible" << std::endl;
         else
             ss << "int: " << i << std::endl;
     }
@@ -157,11 +169,11 @@ void outputValues(char const &type, char const &c, int const &i, float const &f,
         float f2 = 0;
 
         ss << "float: ";
-        if (type == FLOAT_POSITIVE_INFINITY)
-            ss << "-inff" << std::endl;
-        else if (type == FLOAT_NEGATIVE_INFINITY)
+        if (type == FLOAT_POSITIVE_INFINITY || type == DOUBLE_POSITIVE_INFINITY)
             ss << "+inff" << std::endl;
-        else if (type == DOUBLE_NAN)
+        else if (type == FLOAT_NEGATIVE_INFINITY || type == DOUBLE_NEGATIVE_INFINITY)
+            ss << "-inff" << std::endl;
+        else if (type == FLOAT_NAN || type == DOUBLE_NAN)
             ss << "nanf" << std::endl;
         else if (std::modf(f, &f2) == 0) {
             ss << std::fixed << std::setprecision(1) << f2;
@@ -174,11 +186,11 @@ void outputValues(char const &type, char const &c, int const &i, float const &f,
     }
     {
         ss << "double: ";
-        if (type == DOUBLE_POSITIVE_INFINITY)
+        if (type == DOUBLE_POSITIVE_INFINITY || type == FLOAT_POSITIVE_INFINITY)
             ss << "+inf" << std::endl;
-        else if (type == DOUBLE_NEGATIVE_INFINITY)
+        else if (type == DOUBLE_NEGATIVE_INFINITY || type == FLOAT_POSITIVE_INFINITY)
             ss << "-inf" << std::endl;
-        else if (type == DOUBLE_NAN)
+        else if (type == DOUBLE_NAN || type == FLOAT_NAN)
             ss << "nan" << std::endl;
         else
             ss << d << std::endl;
