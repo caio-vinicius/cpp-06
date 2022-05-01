@@ -10,8 +10,6 @@ class Data {
     ~Data(void);
     Data &operator=(Data const &rhs);
     Data(Data const &src);
- private:
-    char data;
 };
 
 #endif
